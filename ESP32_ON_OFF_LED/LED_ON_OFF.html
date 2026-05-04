@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>ESP32 Smart Control</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: white;
+      text-align: center;
+      padding-top: 80px;
+      padding-bottom: 260px;
+    }
+
+h1 {
+  margin-bottom: 30px;
+}
+
+.card {
+  background: rgba(255,255,255,0.1);
+  padding: 40px;
+  border-radius: 15px;
+  width: 300px;
+  margin: auto;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+button {
+  padding: 15px 30px;
+  font-size: 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin: 10px;
+  transition: 0.3s;
+}
+
+.on-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.on-btn:disabled {
+  background-color: #5a6268;
+  cursor: not-allowed;
+}
+
+.off-btn {
+  background-color: #dc3545;
+  color: white;
+  display: none;
+}
+
+.status {
+  margin-top: 20px;
+  font-size: 18px;
+}
+
+
+  </style>
+</head>
+<body>
+
+<h1>ESP32 LED Control</h1>
+
+<div class="card">
+  <button id="onBtn" class="on-btn" onclick="turnOn()">Turn ON</button>
+  <button id="offBtn" class="off-btn" onclick="turnOff()">Turn OFF</button>
+
+  <div class="status" id="status">Status: OFF</div>
+</div>
+
+<script>
+const onBtn = document.getElementById("onBtn");
+const offBtn = document.getElementById("offBtn");
+const statusText = document.getElementById("status");
+
+function send(cmd) {
+  fetch("https://g7mc73a8lc.execute-api.ap-south-1.amazonaws.com/send", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ cmd })
+  })
+  .then(res => res.text())
+  .then(data => {
+    console.log(data);
+  })
+  .catch(err => console.error(err));
+}
+
+function turnOn() {
+  send("ON");
+
+  onBtn.disabled = true;
+  offBtn.style.display = "inline-block";
+  statusText.innerText = "Status: ON";
+}
+
+function turnOff() {
+  send("OFF");
+
+  onBtn.disabled = false;
+  offBtn.style.display = "none";
+  statusText.innerText = "Status: OFF";
+}
+</script>
+
+</body>
+</html>
